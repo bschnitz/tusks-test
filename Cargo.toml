@@ -1,0 +1,7 @@
+[package]
+name = "tusks-test"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tusks = { path = "../tusks" }
