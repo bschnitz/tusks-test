@@ -58,7 +58,7 @@ fn main() {
     //tasks::__tusks_internal_module::mirror_module::optional(Some("42".into()));
     //tasks::__tusks_internal_module::mirror_module::optional(None);
     //tasks::__tusks_internal_module::mirror_module::git::push("main".into(), true);
-    tasks::__tusks_internal_module::execute_cli(".".to_string());
+    tasks::__tusks_internal_module::execute_cli();
     //tasks::__tusks_internal_module::mirror_module::git::push("hello".into(), Some("hello".into()));
     //tasks::holla::__tusks_internal_module::mirror_module::holla();
 }
