@@ -11,6 +11,19 @@ mod tasks {
         println!("Initializing project: {}", name);
     }
 
+    pub fn count(times: u8) {
+        for i in 1..=times {
+            println!("{}", i);
+        }
+    }
+
+    pub fn optional(opt: Option<u16>) {
+        match opt {
+            Some(value) => println!("Value provided: {}", value),
+            None => println!("No value provided"),
+        }
+    }
+
     pub mod docker {
         pub use crate::compose::compose;
 
@@ -31,9 +44,8 @@ mod tasks {
         }
         
         #[defaults(branch="main")]
-        pub fn push(branch: String, force: Option<bool>) {
-            let force_flag = force.unwrap_or(false);
-            println!("Pushing to branch: {} (force: {})", branch, force_flag);
+        pub fn push(branch: String, force: bool) {
+            println!("Pushing to branch: {} (force: {})", branch, force);
         }
     }
 }
@@ -41,4 +53,11 @@ mod tasks {
 fn main() {
     let tree = tasks::__tusks_internal_module::get_tusks_tree();
     println!("{:#?}", tree);
+    tasks::__tusks_internal_module::mirror_module::init("my project".into());
+    tasks::__tusks_internal_module::mirror_module::count("5".into());
+    tasks::__tusks_internal_module::mirror_module::optional(Some("42".into()));
+    tasks::__tusks_internal_module::mirror_module::optional(None);
+    tasks::__tusks_internal_module::mirror_module::git::push("main".into(), true);
+    //tasks::__tusks_internal_module::mirror_module::git::push("hello".into(), Some("hello".into()));
+    //tasks::holla::__tusks_internal_module::mirror_module::holla();
 }
