@@ -51,13 +51,14 @@ mod tasks {
 }
 
 fn main() {
-    let tree = tasks::__tusks_internal_module::get_tusks_tree();
-    println!("{:#?}", tree);
-    tasks::__tusks_internal_module::mirror_module::init("my project".into());
-    tasks::__tusks_internal_module::mirror_module::count("5".into());
-    tasks::__tusks_internal_module::mirror_module::optional(Some("42".into()));
-    tasks::__tusks_internal_module::mirror_module::optional(None);
-    tasks::__tusks_internal_module::mirror_module::git::push("main".into(), true);
+    //let tree = tasks::__tusks_internal_module::get_tusks_tree();
+    //println!("{:#?}", tree);
+    //tasks::__tusks_internal_module::mirror_module::init("my project".into());
+    //tasks::__tusks_internal_module::mirror_module::count("5".into());
+    //tasks::__tusks_internal_module::mirror_module::optional(Some("42".into()));
+    //tasks::__tusks_internal_module::mirror_module::optional(None);
+    //tasks::__tusks_internal_module::mirror_module::git::push("main".into(), true);
+    tasks::__tusks_internal_module::execute_cli(".".to_string());
     //tasks::__tusks_internal_module::mirror_module::git::push("hello".into(), Some("hello".into()));
     //tasks::holla::__tusks_internal_module::mirror_module::holla();
 }
