@@ -7,8 +7,7 @@ pub mod compose {
         println!("Starting containers (detached: {})", detached_flag);
     }
     
-    #[defaults(force="false")]
-    pub fn down(force: String) {
+    pub fn down(force: bool) {
         println!("Stopping containers (force: {})", force);
     }
     
@@ -22,9 +21,8 @@ pub mod compose {
             println!("Scaling {} to {} replicas", service, replicas);
         }
         
-        pub fn logs(service: String, follow: Option<bool>) {
-            let follow_flag = follow.unwrap_or(false);
-            println!("Showing logs for {} (follow: {})", service, follow_flag);
+        pub fn logs(service: String, follow: bool) {
+            println!("Showing logs for {} (follow: {})", service, follow);
         }
     }
 }
