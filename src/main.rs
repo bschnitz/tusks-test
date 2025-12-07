@@ -1,12 +1,19 @@
 use tusks::tusks;
 
+pub mod holla;
+pub mod compose;
+
 #[tusks]
-mod project {
+mod tasks {
+    pub use crate::holla::tasks as holla;
+
     pub fn init(name: String) {
         println!("Initializing project: {}", name);
     }
 
     pub mod docker {
+        pub use crate::compose::compose;
+
         #[defaults(tag="latest")]
         pub fn build(tag: String) {
             println!("Building docker image with tag: {}", tag);
@@ -32,4 +39,6 @@ mod project {
 }
 
 fn main() {
+    let tree = tasks::__tusks_internal_module::get_tusks_tree();
+    println!("{:#?}", tree);
 }

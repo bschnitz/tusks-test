@@ -134,7 +134,7 @@ dependencies = [
 
 [[package]]
 name = "tusks"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "tusks-lib",
  "tusks-macro",
@@ -142,7 +142,7 @@ dependencies = [
 
 [[package]]
 name = "tusks-lib"
-version = "0.1.0"
+version = "0.3.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -151,7 +151,7 @@ dependencies = [
 
 [[package]]
 name = "tusks-macro"
-version = "0.1.0"
+version = "0.3.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -161,7 +161,7 @@ dependencies = [
 
 [[package]]
 name = "tusks-test"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "clap",
  "tusks",
