@@ -61,3 +61,13 @@ fn main() {
     // 5
 }
 ```
+
+## TODO and Wanted Features
+
+- [ ] Doku in tusks
+- [ ] Publish on crates.io
+- [ ] Positional Arguments
+- [ ] Doc texte
+- [ ] Listen (--buy apple pear bread)
+- [ ] Enum (nur bestimmte werte erlauben)
+- [ ] Structs mit den Argumenten

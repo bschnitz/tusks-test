@@ -24,6 +24,11 @@ mod tasks {
         }
     }
 
+    #[positional(positional)]
+    pub fn positional(positional: String) {
+        println!("The positional Argument is: {}", positional);
+    }
+
     pub mod docker {
         pub use crate::compose::compose;
 
