@@ -31,18 +31,18 @@ mod tasks {
         pub fn build(tag: String) {
             println!("Building docker image with tag: {}", tag);
         }
-        
+
         #[defaults(registry="latest")]
         pub fn push(registry: String, image: String) {
             println!("Pushing {}to {}", image, registry);
         }
     }
-    
+
     pub mod git {
         pub fn commit(message: String) {
             println!("Committing: {}", message);
         }
-        
+
         #[defaults(branch="main")]
         pub fn push(branch: String, force: bool) {
             println!("Pushing to branch: {} (force: {})", branch, force);
