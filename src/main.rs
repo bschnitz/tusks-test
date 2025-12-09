@@ -5,6 +5,8 @@ pub mod compose;
 
 #[tusks]
 mod tasks {
+    use tusks::RepeatMinMax;
+
     pub use crate::holla::tasks as holla;
 
     pub fn init(name: String) {
@@ -22,6 +24,22 @@ mod tasks {
             Some(value) => println!("Value provided: {}", value),
             None => println!("No value provided"),
         }
+    }
+
+    pub fn sum(numbers: RepeatMinMax<u16, 2, 3>) {
+        let sum: u32 = numbers.iter().map(|&n| n as u32).sum();
+        println!("The sum of the numbers is {}", sum);
+    }
+
+    pub fn sum2(numbers: Vec<u16>) {
+        let sum: u32 = numbers.iter().map(|&n| n as u32).sum();
+        println!("The sum of the numbers is {}", sum);
+    }
+
+    #[positional(numbers)]
+    pub fn sum3(numbers: Vec<u16>) {
+        let sum: u32 = numbers.iter().map(|&n| n as u32).sum();
+        println!("The sum of the numbers is {}", sum);
     }
 
     #[positional(positional)]

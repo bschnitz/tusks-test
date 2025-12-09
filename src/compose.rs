@@ -2,9 +2,8 @@ use tusks::tusks;
 
 #[tusks]
 pub mod compose {
-    pub fn up(detached: Option<bool>) {
-        let detached_flag = detached.unwrap_or(false);
-        println!("Starting containers (detached: {})", detached_flag);
+    pub fn up(detached: bool) {
+        println!("Starting containers (detached: {})", detached);
     }
 
     pub fn down(force: bool) {

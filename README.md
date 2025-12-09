@@ -21,22 +21,8 @@ This will print the complete tree including links to other modules.
 
 ## Calling Callbacks with AutomaticTtype Conversion
 
-For each public function in the module tree, a mirror function is now generated.
-The mirror function has the same parameters, which however may have a different type:
-
-- parameters of type `bool` will have the same type in the mirror function
-- parameters of type `Option<_type_>` will have the type `Option<String>` in the
-  mirror function.
-- parameters of any other type `_type_` will have the type `String` in the
-  mirror function.
-
-The mirror function will then convert all non-boolean types using `from_string`
-into the types accepted by the original function and pass them to the original
-function. Of course the `Option<*>`-types are first unwrapped and then
-converted, if not `None` or otherwise passed as `None`.
-
-This means, that the types used in the orginal functions must implement the
-`FromStr`-Trait!
+Clap will do type converstion. However the type must implement FromStr or
+Option<FromStr>
 
 **Example:**
 ```rust
@@ -64,10 +50,16 @@ fn main() {
 
 ## TODO and Wanted Features
 
+- [ ] Argumente mit Multiplicity
 - [ ] Doku in tusks
 - [ ] Publish on crates.io
-- [ ] Positional Arguments
-- [ ] Doc texte
+- [ ] Doc texte für tusks und argumente
 - [ ] Listen (--buy apple pear bread)
 - [ ] Enum (nur bestimmte werte erlauben)
 - [ ] Structs mit den Argumenten
+- [ ] remove mirror module code
+- [ ] other cleanup
+- [ ] reexport clap from `tusks_lib` and then `tusks` to have it only once as
+      dependency
+- [ ] Alternative attribut syntax für Argumente
+- [ ] Tests
