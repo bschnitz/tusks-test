@@ -1,7 +1,11 @@
 use tusks::tusks;
 
+use clap::Parser;
+
 pub mod holla;
 pub mod compose;
+pub mod submod1;
+pub mod submod2;
 
 #[tusks]
 mod tasks {
@@ -71,6 +75,64 @@ mod tasks {
             println!("Pushing to branch: {} (force: {})", branch, force);
         }
     }
+
+    // Test Functions
+
+    pub fn t_string(v_string: String) {
+        println!("{}", v_string);
+    }
+
+    pub fn t_int(v_int: i8) {
+        println!("{}", v_int);
+    }
+
+    pub fn t_optional(v_opt: Option<u8>) {
+        println!("{:?}", v_opt);
+    }
+
+    pub fn t_multiple_vec(v_vec: Vec<String>) {
+        println!("{:?}", v_vec);
+    }
+
+    pub fn t_multiple_vec_int(v_vec: Vec<i8>) {
+        println!("{:?}", v_vec);
+    }
+
+    pub fn t_multiple_min_max(v_vec: RepeatMinMax<u16, 2, 5>) {
+        println!("{:?}", v_vec);
+    }
+
+    pub fn t_optional_vec(v_vec: Option<Vec<String>>) {
+        println!("{:?}", v_vec);
+    }
+
+    #[defaults(v_default="default")]
+    pub fn t_string_defaults(v_default: String) {
+        println!("{}", v_default);
+    }
+
+    #[defaults(v_default=23)]
+    pub fn t_int_defaults(v_default: u8) {
+        println!("{}", v_default);
+    }
+
+    #[positional(v_positional)]
+    pub fn t_positional(v_positional: String) {
+        println!("{}", v_positional);
+    }
+
+    #[positional(v_positional)]
+    pub fn t_positional_vec(v_positional: Vec<String>) {
+        println!("{:?}", v_positional);
+    }
+
+    pub mod submodule {
+        pub fn t_submodule() {
+            println!("Submodule");
+        }
+    }
+
+    pub use crate::submod1::tasks as submod1;
 }
 
 fn main() {
