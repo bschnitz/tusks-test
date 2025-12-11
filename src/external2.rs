@@ -1,6 +1,10 @@
 use tusks::tusks;
 
 #[tusks()]
+#[command(
+    about = "External module 2 - maximum nesting",
+    long_about = "Demonstrates four-level parameter chain: ext2 -> ext1 -> level1 -> root"
+)]
 pub mod tasks {
     pub use crate::external1::tasks as parent_;
 
@@ -10,6 +14,10 @@ pub mod tasks {
     }
 
     /// Deeply nested external task - demonstrates deep super_ chain
+    #[command(
+        about = "Deep external task",
+        long_about = "Access parameters from 4 levels: ext2 -> ext1 -> level1 -> root"
+    )]
     pub fn ext2_task(
         params: &Parameters,
         #[arg(short, long)]
@@ -41,6 +49,10 @@ pub mod tasks {
     }
 
     /// Task with multiple types - demonstrates complex parameter access
+    #[command(
+        about = "Complex task with multiple argument types",
+        long_about = "Tests bool flags, Vec parameters, and Option types together"
+    )]
     pub fn ext2_complex(
         params: &Parameters,
         #[arg(long)]

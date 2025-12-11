@@ -1,7 +1,3 @@
-
-// =============================================================================
-// FILE: src/main.rs
-// =============================================================================
 use tusks::tusks;
 
 mod external_root;
@@ -9,6 +5,12 @@ mod external1;
 mod external2;
 
 #[tusks(root)]
+#[command(
+    about = "Comprehensive CLI testing tool",
+    long_about = "A comprehensive command-line interface for testing the tusks macro system with nested modules and parameter chains",
+    version = "1.0.0",
+    author = "Test Author"
+)]
 pub mod tasks {
     pub struct Parameters<'a> {
         #[arg(long)]
@@ -19,6 +21,10 @@ pub mod tasks {
     }
 
     /// Task with Parameters argument - accesses root parameters
+    #[command(
+        about = "First task with parameters",
+        long_about = "Demonstrates accessing root parameters and verbose flag"
+    )]
     pub fn task1(params: &Parameters, #[arg(long)] arg1: String) -> i32 {
         println!("=== root::task1 ===");
         println!("  root_param: {}", params.root_param);
@@ -32,6 +38,7 @@ pub mod tasks {
     }
 
     /// Task without Parameters argument, with return value
+    #[command(about = "Doubles a numeric value")]
     pub fn task2(#[arg(short, long)] value: i32) -> i32 {
         println!("=== root::task2 ===");
         println!("  value: {}", value);
@@ -40,12 +47,17 @@ pub mod tasks {
     }
 
     /// Task with no arguments at all
+    #[command(about = "Task with no arguments")]
     pub fn task3() {
         println!("=== root::task3 ===");
         println!("  No arguments, just executing");
     }
 
     /// Task with Vec parameter
+    #[command(
+        about = "Process a list of items",
+        long_about = "Takes multiple items as input and displays them"
+    )]
     pub fn task4(
         params: &Parameters,
         #[arg(long)]
@@ -57,6 +69,10 @@ pub mod tasks {
         println!("  item count: {}", items.len());
     }
 
+    #[command(
+        about = "Level 1 submodule",
+        long_about = "First level of nested commands with its own parameters"
+    )]
     pub mod level1 {
         pub struct Parameters<'a> {
             #[arg(long)]
@@ -67,6 +83,7 @@ pub mod tasks {
         }
 
         /// Subtask accessing both level1 and root parameters
+        #[command(about = "First subtask with parameter chain")]
         pub fn subtask1(
             params: &Parameters,
             #[arg(long)]
@@ -89,6 +106,10 @@ pub mod tasks {
         }
 
         /// Subtask with only Parameters argument - demonstrates super_ access
+        #[command(
+            about = "Second subtask",
+            long_about = "Demonstrates accessing parent parameters through super_"
+        )]
         pub fn subtask2(params: &Parameters) {
             println!("=== level1::subtask2 ===");
             println!("  level1_field: {:?}", params.level1_field);
@@ -97,6 +118,7 @@ pub mod tasks {
             println!("    verbose: {}", params.super_.verbose);
         }
 
+        #[command(about = "Level 2 - deeply nested module")]
         pub mod level2 {
             pub struct Parameters<'a> {
                 #[arg(long)]
@@ -104,6 +126,10 @@ pub mod tasks {
             }
 
             /// Deep task accessing level2, level1, and root parameters
+            #[command(
+                about = "Deep nested task",
+                long_about = "Demonstrates accessing parameters from multiple levels up the chain"
+            )]
             pub fn deep_task(
                 params: &Parameters,
                 #[arg(long)] 
@@ -126,8 +152,10 @@ pub mod tasks {
                 }
             }
 
+            #[command(about = "Maximum depth level")]
             pub mod level3 {
                 /// Very deep task - no Parameters, but we could pass parent params
+                #[command(about = "Task at maximum nesting depth")]
                 pub fn very_deep(#[arg(long)] depth: u32) -> u32 {
                     println!("=== level3::very_deep ===");
                     println!("  depth: {}", depth);
@@ -138,12 +166,15 @@ pub mod tasks {
         }
 
         // External module at level1
+        #[command(about = "External module 1")]
         pub use crate::external1::tasks as ext1;
     }
 
+    #[command(about = "Alternative level 1 module without Parameters")]
     pub mod level1b {
         // No Parameters struct in this module
 
+        #[command(about = "Task without module Parameters struct")]
         pub fn task_no_params(#[arg(long)] x: u8) -> i32 {
             println!("=== level1b::task_no_params ===");
             println!("  x: {}", x);
@@ -151,6 +182,10 @@ pub mod tasks {
             x as i32
         }
 
+        #[command(
+            about = "Task with multiple argument types",
+            long_about = "Demonstrates various argument types: String, Option, bool, Vec"
+        )]
         pub fn task_multi_args(
             #[arg(short, long)]
             name: String,
@@ -177,6 +212,10 @@ pub mod tasks {
     }
 
     // External module at root level
+    #[command(
+        about = "External root module",
+        long_about = "External module attached at root level demonstrating parent_ references"
+    )]
     pub use crate::external_root::tasks as extroot;
 }
 

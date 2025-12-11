@@ -1,20 +1,5 @@
-// =============================================================================
-// FILE: Cargo.toml (add to [dev-dependencies])
-// =============================================================================
-// [dev-dependencies]
-// assert_cmd = "2.1.1"
-// predicates = "3.1.3"
-
-// =============================================================================
-// FILE: tests/integration_tests.rs
-// =============================================================================
-use assert_cmd::Command;
+mod common;
 use predicates::prelude::*;
-
-/// Helper function to create a command with common setup
-fn cmd() -> Command {
-    Command::cargo_bin(env!("CARGO_PKG_NAME")).unwrap()
-}
 
 // =============================================================================
 // ROOT LEVEL TESTS
@@ -22,7 +7,7 @@ fn cmd() -> Command {
 
 #[test]
 fn test_root_task1_with_parameters() {
-    cmd()
+    common::cli()
         .args(&["--root-param", "test_root", "--verbose", "task1", "--arg1", "hello"])
         .assert()
         .success()
@@ -35,7 +20,7 @@ fn test_root_task1_with_parameters() {
 
 #[test]
 fn test_root_task1_without_verbose() {
-    cmd()
+    common::cli()
         .args(&["--root-param", "test_root", "task1", "--arg1", "hello"])
         .assert()
         .success()
@@ -45,7 +30,7 @@ fn test_root_task1_without_verbose() {
 
 #[test]
 fn test_root_task2_return_value() {
-    cmd()
+    common::cli()
         .args(&["--root-param", "test_root", "task2", "--value", "21"])
         .assert()
         .success()
@@ -56,7 +41,7 @@ fn test_root_task2_return_value() {
 
 #[test]
 fn test_root_task2_short_flag() {
-    cmd()
+    common::cli()
         .args(&["--root-param", "test_root", "task2", "-v", "10"])
         .assert()
         .success()
@@ -66,7 +51,7 @@ fn test_root_task2_short_flag() {
 
 #[test]
 fn test_root_task3_no_args() {
-    cmd()
+    common::cli()
         .args(&["--root-param", "test_root", "task3"])
         .assert()
         .success()
@@ -76,7 +61,7 @@ fn test_root_task3_no_args() {
 
 #[test]
 fn test_root_task4_vec_params() {
-    cmd()
+    common::cli()
         .args(&["--root-param", "test_root", "task4", "--items", "a", "--items", "b", "--items", "c"])
         .assert()
         .success()
@@ -88,7 +73,7 @@ fn test_root_task4_vec_params() {
 
 #[test]
 fn test_root_task4_empty_vec() {
-    cmd()
+    common::cli()
         .args(&["--root-param", "test_root", "task4"])
         .assert()
         .success()
@@ -102,7 +87,7 @@ fn test_root_task4_empty_vec() {
 
 #[test]
 fn test_level1_subtask1_with_super_access() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "root_value",
             "--verbose",
@@ -123,7 +108,7 @@ fn test_level1_subtask1_with_super_access() {
 
 #[test]
 fn test_level1_subtask1_default_number() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "root_value",
             "level1",
@@ -136,7 +121,7 @@ fn test_level1_subtask1_default_number() {
 
 #[test]
 fn test_level1_subtask1_custom_number() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "root_value",
             "level1",
@@ -150,7 +135,7 @@ fn test_level1_subtask1_custom_number() {
 
 #[test]
 fn test_level1_subtask2_super_chain() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "chained_root",
             "--verbose",
@@ -172,7 +157,7 @@ fn test_level1_subtask2_super_chain() {
 
 #[test]
 fn test_level2_deep_task_super_chain() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "deep_root",
             "--verbose",
@@ -181,7 +166,7 @@ fn test_level2_deep_task_super_chain() {
             "--level1-number", "99",
             "level2",
             "--level2-id", "12345",
-            "deep_task",
+            "deep-task",
             "--enabled"
         ])
         .assert()
@@ -198,13 +183,13 @@ fn test_level2_deep_task_super_chain() {
 
 #[test]
 fn test_level2_deep_task_without_verbose() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "root",
             "level1",
             "level2",
             "--level2-id", "999",
-            "deep_task"
+            "deep-task"
         ])
         .assert()
         .success()
@@ -218,14 +203,14 @@ fn test_level2_deep_task_without_verbose() {
 
 #[test]
 fn test_level3_very_deep() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "root",
             "level1",
             "level2",
             "--level2-id", "123",
             "level3",
-            "very_deep",
+            "very-deep",
             "--depth", "42"
         ])
         .assert()
@@ -241,11 +226,11 @@ fn test_level3_very_deep() {
 
 #[test]
 fn test_level1b_task_no_params() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "root",
             "level1b",
-            "task_no_params",
+            "task-no-params",
             "--x", "255"
         ])
         .assert()
@@ -257,11 +242,11 @@ fn test_level1b_task_no_params() {
 
 #[test]
 fn test_level1b_task_multi_args_all_options() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "root",
             "level1b",
-            "task_multi_args",
+            "task-multi-args",
             "--name", "Alice",
             "--age", "30",
             "-a", // short flag for active
@@ -280,11 +265,11 @@ fn test_level1b_task_multi_args_all_options() {
 
 #[test]
 fn test_level1b_task_multi_args_optional_missing() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "root",
             "level1b",
-            "task_multi_args",
+            "task-multi-args",
             "-n", "Bob", // short flag for name
             "-a"
         ])
@@ -302,13 +287,13 @@ fn test_level1b_task_multi_args_optional_missing() {
 
 #[test]
 fn test_extroot_ext_task_with_parent_access() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "main_root",
             "--verbose",
             "extroot",
             "--extroot-name", "external_module",
-            "ext_task",
+            "ext-task",
             "--count", "100"
         ])
         .assert()
@@ -323,13 +308,13 @@ fn test_extroot_ext_task_with_parent_access() {
 
 #[test]
 fn test_extroot_sub_ext_sub_task() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "root",
             "extroot",
             "--extroot-name", "ext",
             "sub",
-            "ext_sub_task",
+            "ext-sub-task",
             "--msg", "hello_from_sub"
         ])
         .assert()
@@ -344,7 +329,7 @@ fn test_extroot_sub_ext_sub_task() {
 
 #[test]
 fn test_ext1_task_deep_chain() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "root_val",
             "--verbose",
@@ -353,7 +338,7 @@ fn test_ext1_task_deep_chain() {
             "--level1-number", "77",
             "ext1",
             "--ext1-param", "123",
-            "ext1_task"
+            "ext1-task"
         ])
         .assert()
         .success()
@@ -368,12 +353,12 @@ fn test_ext1_task_deep_chain() {
 
 #[test]
 fn test_ext1_vec_task() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "root",
             "level1",
             "ext1",
-            "ext1_vec_task",
+            "ext1-vec-task",
             "--values", "10",
             "--values", "20",
             "--values", "30"
@@ -392,7 +377,7 @@ fn test_ext1_vec_task() {
 
 #[test]
 fn test_ext2_task_maximum_chain() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "deepest_root",
             "--verbose",
@@ -402,7 +387,7 @@ fn test_ext2_task_maximum_chain() {
             "--ext1-param", "999",
             "ext2",
             "--ext2-param", "ext2_data",
-            "ext2_task",
+            "ext2-task",
             "-x", "test_value"
         ])
         .assert()
@@ -420,7 +405,7 @@ fn test_ext2_task_maximum_chain() {
 
 #[test]
 fn test_ext2_complex_full_chain() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "root",
             "--verbose",
@@ -428,7 +413,7 @@ fn test_ext2_complex_full_chain() {
             "ext1",
             "ext2",
             "--ext2-param", "complex",
-            "ext2_complex",
+            "ext2-complex",
             "--flag",
             "--numbers", "100",
             "--numbers", "200",
@@ -449,14 +434,14 @@ fn test_ext2_complex_full_chain() {
 
 #[test]
 fn test_ext2_complex_minimal_args() {
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "root",
             "level1",
             "ext1",
             "ext2",
             "--ext2-param", "minimal",
-            "ext2_complex"
+            "ext2-complex"
         ])
         .assert()
         .success()
@@ -471,7 +456,7 @@ fn test_ext2_complex_minimal_args() {
 
 #[test]
 fn test_missing_required_root_param() {
-    cmd()
+    common::cli()
         .args(&["task1", "--arg1", "hello"])
         .assert()
         .failure()
@@ -480,7 +465,7 @@ fn test_missing_required_root_param() {
 
 #[test]
 fn test_invalid_command() {
-    cmd()
+    common::cli()
         .args(&["--root-param", "root", "nonexistent-command"])
         .assert()
         .failure();
@@ -488,7 +473,7 @@ fn test_invalid_command() {
 
 #[test]
 fn test_missing_required_arg_in_task() {
-    cmd()
+    common::cli()
         .args(&["--root-param", "root", "task1"]) // missing --arg1
         .assert()
         .failure()
@@ -497,7 +482,7 @@ fn test_missing_required_arg_in_task() {
 
 #[test]
 fn test_invalid_type_for_numeric_arg() {
-    cmd()
+    common::cli()
         .args(&["--root-param", "root", "task2", "--value", "not_a_number"])
         .assert()
         .failure()
@@ -510,7 +495,7 @@ fn test_invalid_type_for_numeric_arg() {
 
 #[test]
 fn test_root_help() {
-    cmd()
+    common::cli()
         .arg("--help")
         .assert()
         .success()
@@ -524,7 +509,7 @@ fn test_root_help() {
 
 #[test]
 fn test_level1_help() {
-    cmd()
+    common::cli()
         .args(&["--root-param", "root", "level1", "--help"])
         .assert()
         .success()
@@ -538,7 +523,7 @@ fn test_level1_help() {
 
 #[test]
 fn test_task_help() {
-    cmd()
+    common::cli()
         .args(&["--root-param", "root", "task1", "--help"])
         .assert()
         .success()
@@ -552,14 +537,14 @@ fn test_task_help() {
 #[test]
 fn test_verbose_propagates_through_all_levels() {
     // Test that verbose flag set at root is accessible in deeply nested functions
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "propagate_test",
             "--verbose",
             "level1",
             "level2",
             "--level2-id", "1",
-            "deep_task",
+            "deep-task",
             "--enabled"
         ])
         .assert()
@@ -570,7 +555,7 @@ fn test_verbose_propagates_through_all_levels() {
 #[test]
 fn test_parameter_chain_integrity() {
     // Verify that parameter chain remains intact through multiple levels
-    cmd()
+    common::cli()
         .args(&[
             "--root-param", "chain_root",
             "level1",
@@ -579,7 +564,7 @@ fn test_parameter_chain_integrity() {
             "--ext1-param", "456",
             "ext2",
             "--ext2-param", "chain_ext2",
-            "ext2_task",
+            "ext2-task",
             "-x", "chain_test"
         ])
         .assert()

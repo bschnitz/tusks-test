@@ -1,6 +1,7 @@
 use tusks::tusks;
 
 #[tusks()]
+#[command(about = "External module 1 - nested under level1")]
 pub mod tasks {
     pub use crate::tasks::level1 as parent_;
 
@@ -10,6 +11,10 @@ pub mod tasks {
     }
 
     /// External1 task accessing ext1, level1, and root parameters
+    #[command(
+        about = "External1 main task",
+        long_about = "Demonstrates three-level parameter chain: ext1 -> level1 -> root"
+    )]
     pub fn ext1_task(params: &Parameters) {
         println!("=== external1::ext1_task ===");
         println!("  ext1_param: {:?}", params.ext1_param);
@@ -28,6 +33,7 @@ pub mod tasks {
     }
 
     /// External1 task with Vec argument
+    #[command(about = "Process vector of integers")]
     pub fn ext1_vec_task(
         params: &Parameters,
         #[arg(long)]

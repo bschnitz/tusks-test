@@ -1,6 +1,10 @@
 use tusks::tusks;
 
 #[tusks()]
+#[command(
+    about = "External root tasks module",
+    long_about = "Demonstrates external module with parent reference to root"
+)]
 pub mod tasks {
     pub use crate::tasks as parent_;
 
@@ -10,6 +14,7 @@ pub mod tasks {
     }
 
     /// External root task accessing both external and root parameters
+    #[command(about = "Main external root task")]
     pub fn ext_task(
         params: &Parameters,
         #[arg(long)]
@@ -30,8 +35,10 @@ pub mod tasks {
         count
     }
 
+    #[command(about = "Submodule in external module")]
     pub mod sub {
         /// Submodule task in external module
+        #[command(about = "Task within external submodule")]
         pub fn ext_sub_task(#[arg(long)] msg: String) {
             println!("=== external_root::sub::ext_sub_task ===");
             println!("  msg: {}", msg);
