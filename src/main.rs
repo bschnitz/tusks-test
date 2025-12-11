@@ -1,149 +1,185 @@
+
+// =============================================================================
+// FILE: src/main.rs
+// =============================================================================
 use tusks::tusks;
 
-use clap::Parser;
+mod external_root;
+mod external1;
+mod external2;
 
-pub mod holla;
-pub mod compose;
-pub mod submod1;
-pub mod submod2;
-
-#[tusks]
-mod tasks {
-    use tusks::RepeatMinMax;
-
-    pub use crate::holla::tasks as holla;
-
-    pub fn init(name: String) {
-        println!("Initializing project: {}", name);
+#[tusks(root)]
+pub mod tasks {
+    pub struct Parameters<'a> {
+        #[arg(long)]
+        pub root_param: &'a String,
+        
+        #[arg(short, long)]
+        pub verbose: &'a bool,
     }
 
-    pub fn count(times: u8) {
-        for i in 1..=times {
-            println!("{}", i);
+    /// Task with Parameters argument - accesses root parameters
+    pub fn task1(params: &Parameters, #[arg(long)] arg1: String) -> i32 {
+        println!("=== root::task1 ===");
+        println!("  root_param: {}", params.root_param);
+        println!("  verbose: {}", params.verbose);
+        println!("  arg1: {}", arg1);
+        
+        if *params.verbose {
+            println!("  [VERBOSE] Executing task1 with root_param='{}'", params.root_param);
+        }
+        0
+    }
+
+    /// Task without Parameters argument, with return value
+    pub fn task2(#[arg(short, long)] value: i32) -> i32 {
+        println!("=== root::task2 ===");
+        println!("  value: {}", value);
+        println!("  returning: {}", value * 2);
+        value * 2
+    }
+
+    /// Task with no arguments at all
+    pub fn task3() {
+        println!("=== root::task3 ===");
+        println!("  No arguments, just executing");
+    }
+
+    /// Task with Vec parameter
+    pub fn task4(
+        params: &Parameters,
+        #[arg(long)]
+        items: Vec<String>
+    ) {
+        println!("=== root::task4 ===");
+        println!("  root_param: {}", params.root_param);
+        println!("  items: {:?}", items);
+        println!("  item count: {}", items.len());
+    }
+
+    pub mod level1 {
+        pub struct Parameters<'a> {
+            #[arg(long)]
+            pub level1_field: &'a Option<String>,
+            
+            #[arg(long, default_value = "42")]
+            pub level1_number: &'a i32,
+        }
+
+        /// Subtask accessing both level1 and root parameters
+        pub fn subtask1(
+            params: &Parameters,
+            #[arg(long)]
+            arg: Option<String>
+        ) -> u8 {
+            println!("=== level1::subtask1 ===");
+            println!("  level1_field: {:?}", params.level1_field);
+            println!("  level1_number: {}", params.level1_number);
+            println!("  arg: {:?}", arg);
+            
+            // Access parent parameters via super_
+            println!("  root_param (via super_): {}", params.super_.root_param);
+            println!("  verbose (via super_): {}", params.super_.verbose);
+            
+            if *params.super_.verbose {
+                println!("  [VERBOSE] Level1 subtask1 accessing root_param='{}'", 
+                         params.super_.root_param);
+            }
+            1
+        }
+
+        /// Subtask with only Parameters argument - demonstrates super_ access
+        pub fn subtask2(params: &Parameters) {
+            println!("=== level1::subtask2 ===");
+            println!("  level1_field: {:?}", params.level1_field);
+            println!("  Accessing root via super_:");
+            println!("    root_param: {}", params.super_.root_param);
+            println!("    verbose: {}", params.super_.verbose);
+        }
+
+        pub mod level2 {
+            pub struct Parameters<'a> {
+                #[arg(long)]
+                pub level2_id: &'a u64,
+            }
+
+            /// Deep task accessing level2, level1, and root parameters
+            pub fn deep_task(
+                params: &Parameters,
+                #[arg(long)] 
+                enabled: bool
+            ) {
+                println!("=== level2::deep_task ===");
+                println!("  level2_id: {}", params.level2_id);
+                println!("  enabled: {}", enabled);
+                
+                // Access level1 parameters
+                println!("  level1_field (via super_): {:?}", params.super_.level1_field);
+                println!("  level1_number (via super_): {}", params.super_.level1_number);
+                
+                // Access root parameters via super_.super_
+                println!("  root_param (via super_.super_): {}", params.super_.super_.root_param);
+                println!("  verbose (via super_.super_): {}", params.super_.super_.verbose);
+                
+                if *params.super_.super_.verbose {
+                    println!("  [VERBOSE] Deep in level2, can still access root!");
+                }
+            }
+
+            pub mod level3 {
+                /// Very deep task - no Parameters, but we could pass parent params
+                pub fn very_deep(#[arg(long)] depth: u32) -> u32 {
+                    println!("=== level3::very_deep ===");
+                    println!("  depth: {}", depth);
+                    println!("  Nested {} levels deep!", depth);
+                    depth
+                }
+            }
+        }
+
+        // External module at level1
+        pub use crate::external1::tasks as ext1;
+    }
+
+    pub mod level1b {
+        // No Parameters struct in this module
+
+        pub fn task_no_params(#[arg(long)] x: u8) -> i32 {
+            println!("=== level1b::task_no_params ===");
+            println!("  x: {}", x);
+            println!("  No Parameters struct in this module");
+            x as i32
+        }
+
+        pub fn task_multi_args(
+            #[arg(short, long)]
+            name: String,
+            #[arg(long)]
+            age: Option<i32>,
+            #[arg(short)]
+            active: bool,
+            tags: Vec<String>
+        ) {
+            println!("=== level1b::task_multi_args ===");
+            println!("  name: {}", name);
+            println!("  age: {:?}", age);
+            println!("  active: {}", active);
+            println!("  tags: {:?}", tags);
         }
     }
 
-    pub fn optional(opt: Option<u16>) {
-        match opt {
-            Some(value) => println!("Value provided: {}", value),
-            None => println!("No value provided"),
+    pub mod empty_module {
+        // Module with only Parameters, no tasks
+        pub struct Parameters<'a> {
+            #[arg(long)]
+            pub empty_field: &'a String,
         }
     }
 
-    pub fn sum(numbers: RepeatMinMax<u16, 2, 3>) {
-        let sum: u32 = numbers.iter().map(|&n| n as u32).sum();
-        println!("The sum of the numbers is {}", sum);
-    }
-
-    pub fn sum2(numbers: Vec<u16>) {
-        let sum: u32 = numbers.iter().map(|&n| n as u32).sum();
-        println!("The sum of the numbers is {}", sum);
-    }
-
-    #[positional(numbers)]
-    pub fn sum3(numbers: Vec<u16>) {
-        let sum: u32 = numbers.iter().map(|&n| n as u32).sum();
-        println!("The sum of the numbers is {}", sum);
-    }
-
-    #[positional(positional)]
-    pub fn positional(positional: String) {
-        println!("The positional Argument is: {}", positional);
-    }
-
-    pub mod docker {
-        pub use crate::compose::compose;
-
-        #[defaults(tag="latest")]
-        pub fn build(tag: String) {
-            println!("Building docker image with tag: {}", tag);
-        }
-
-        #[defaults(registry="latest")]
-        pub fn push(registry: String, image: String) {
-            println!("Pushing {}to {}", image, registry);
-        }
-    }
-
-    pub mod git {
-        pub fn commit(message: String) {
-            println!("Committing: {}", message);
-        }
-
-        #[defaults(branch="main")]
-        pub fn push(branch: String, force: bool) {
-            println!("Pushing to branch: {} (force: {})", branch, force);
-        }
-    }
-
-    // Test Functions
-
-    pub fn t_string(v_string: String) {
-        println!("{}", v_string);
-    }
-
-    pub fn t_int(v_int: i8) {
-        println!("{}", v_int);
-    }
-
-    pub fn t_optional(v_opt: Option<u8>) {
-        println!("{:?}", v_opt);
-    }
-
-    pub fn t_multiple_vec(v_vec: Vec<String>) {
-        println!("{:?}", v_vec);
-    }
-
-    pub fn t_multiple_vec_int(v_vec: Vec<i8>) {
-        println!("{:?}", v_vec);
-    }
-
-    pub fn t_multiple_min_max(v_vec: RepeatMinMax<u16, 2, 5>) {
-        println!("{:?}", v_vec);
-    }
-
-    pub fn t_optional_vec(v_vec: Option<Vec<String>>) {
-        println!("{:?}", v_vec);
-    }
-
-    #[defaults(v_default="default")]
-    pub fn t_string_defaults(v_default: String) {
-        println!("{}", v_default);
-    }
-
-    #[defaults(v_default=23)]
-    pub fn t_int_defaults(v_default: u8) {
-        println!("{}", v_default);
-    }
-
-    #[positional(v_positional)]
-    pub fn t_positional(v_positional: String) {
-        println!("{}", v_positional);
-    }
-
-    #[positional(v_positional)]
-    pub fn t_positional_vec(v_positional: Vec<String>) {
-        println!("{:?}", v_positional);
-    }
-
-    pub mod submodule {
-        pub fn t_submodule() {
-            println!("Submodule");
-        }
-    }
-
-    pub use crate::submod1::tasks as submod1;
+    // External module at root level
+    pub use crate::external_root::tasks as extroot;
 }
 
 fn main() {
-    //let tree = tasks::__tusks_internal_module::get_tusks_tree();
-    //println!("{:#?}", tree);
-    //tasks::__tusks_internal_module::mirror_module::init("my project".into());
-    //tasks::__tusks_internal_module::mirror_module::count("5".into());
-    //tasks::__tusks_internal_module::mirror_module::optional(Some("42".into()));
-    //tasks::__tusks_internal_module::mirror_module::optional(None);
-    //tasks::__tusks_internal_module::mirror_module::git::push("main".into(), true);
-    tasks::__tusks_internal_module::execute_cli();
-    //tasks::__tusks_internal_module::mirror_module::git::push("hello".into(), Some("hello".into()));
-    //tasks::holla::__tusks_internal_module::mirror_module::holla();
+    tasks::__internal_tusks_module::exec_cli();
 }
