@@ -6,6 +6,7 @@ mod external2;
 
 #[tusks(root)]
 #[command(
+    arg_required_else_help = true,
     about = "Comprehensive CLI testing tool",
     long_about = "A comprehensive command-line interface for testing the tusks macro system with nested modules and parameter chains",
     version = "1.0.0",
@@ -20,12 +21,25 @@ pub mod tasks {
         pub verbose: &'a bool,
     }
 
+    #[skip]
+    pub fn parse_port(s: &str) -> Result<u16, String> {
+        s.parse::<u16>()
+            .map_err(|_| "Port must be an integer".into())
+    }
+
+    pub fn task0(
+        #[arg(value_parser = crate::tasks::parse_port)]
+        port: u16
+    ) {
+        println!("Port is: {}", port)
+    }
+
     /// Task with Parameters argument - accesses root parameters
     #[command(
         about = "First task with parameters",
         long_about = "Demonstrates accessing root parameters and verbose flag"
     )]
-    pub fn task1(params: &Parameters, #[arg(long)] arg1: String) -> i32 {
+    pub fn task1(params: &Parameters, #[arg(long)] arg1: String) -> u8 {
         println!("=== root::task1 ===");
         println!("  root_param: {}", params.root_param);
         println!("  verbose: {}", params.verbose);
@@ -39,11 +53,11 @@ pub mod tasks {
 
     /// Task without Parameters argument, with return value
     #[command(about = "Doubles a numeric value")]
-    pub fn task2(#[arg(short, long)] value: i32) -> i32 {
+    pub fn task2(#[arg(short, long)] value: i32) -> u8 {
         println!("=== root::task2 ===");
         println!("  value: {}", value);
         println!("  returning: {}", value * 2);
-        value * 2
+(value * 2) as u8
     }
 
     /// Task with no arguments at all
@@ -156,17 +170,17 @@ pub mod tasks {
             pub mod level3 {
                 /// Very deep task - no Parameters, but we could pass parent params
                 #[command(about = "Task at maximum nesting depth")]
-                pub fn very_deep(#[arg(long)] depth: u32) -> u32 {
+                pub fn very_deep(#[arg(long)] depth: u32) -> u8 {
                     println!("=== level3::very_deep ===");
                     println!("  depth: {}", depth);
                     println!("  Nested {} levels deep!", depth);
-                    depth
+                    depth as u8
                 }
             }
         }
 
         // External module at level1
-        #[command(about = "External module 1")]
+        #[command()]
         pub use crate::external1::tasks as ext1;
     }
 
@@ -175,11 +189,11 @@ pub mod tasks {
         // No Parameters struct in this module
 
         #[command(about = "Task without module Parameters struct")]
-        pub fn task_no_params(#[arg(long)] x: u8) -> i32 {
+        pub fn task_no_params(#[arg(long)] x: u8) -> u8 {
             println!("=== level1b::task_no_params ===");
             println!("  x: {}", x);
             println!("  No Parameters struct in this module");
-            x as i32
+            x as u8
         }
 
         #[command(
@@ -219,6 +233,6 @@ pub mod tasks {
     pub use crate::external_root::tasks as extroot;
 }
 
-fn main() {
-    tasks::__internal_tusks_module::exec_cli();
+fn main() -> std::process::ExitCode {
+    std::process::ExitCode::from(tasks::exec_cli().unwrap_or(0) as u8)
 }

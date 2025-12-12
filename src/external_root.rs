@@ -18,8 +18,8 @@ pub mod tasks {
     pub fn ext_task(
         params: &Parameters,
         #[arg(long)]
-        count: i32
-    ) -> i32 {
+        count: u8
+    ) -> u8 {
         println!("=== external_root::ext_task ===");
         println!("  extroot_name: {}", params.extroot_name);
         println!("  count: {}", count);

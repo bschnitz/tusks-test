@@ -1,4 +1,5 @@
 mod common;
+use assert_cmd::prelude::*;
 use predicates::prelude::*;
 
 // =============================================================================
@@ -60,7 +61,6 @@ fn test_task2_shown_in_root_help() {
 
 #[test]
 fn test_task3_shown_in_root_help() {
-    // task3 has no #[command] attribute, should use doc comment
     common::cli()
         .arg("--help")
         .assert()
@@ -250,7 +250,7 @@ fn test_ext2_shown_in_ext1_help() {
         .assert()
         .success()
         .stdout(predicate::str::contains("ext2"))
-        .stdout(predicate::str::contains("External module 2 - maximum nesting"));
+        .stdout(predicate::str::contains("External module 1 - nested under level1"));
 }
 
 #[test]
@@ -398,6 +398,7 @@ fn test_all_subcommands_listed_in_help() {
         .arg("--help")
         .assert()
         .success()
+        .stdout(predicate::str::contains("task0"))
         .stdout(predicate::str::contains("task1"))
         .stdout(predicate::str::contains("task2"))
         .stdout(predicate::str::contains("task3"))

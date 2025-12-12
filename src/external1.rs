@@ -37,18 +37,22 @@ pub mod tasks {
     pub fn ext1_vec_task(
         params: &Parameters,
         #[arg(long)]
-        values: Vec<i32>
-    ) {
+        values: Vec<u8>
+    ) -> Option<u8> {
         println!("=== external1::ext1_vec_task ===");
         println!("  ext1_param: {:?}", params.ext1_param);
         println!("  values: {:?}", values);
-        println!("  sum: {}", values.iter().sum::<i32>());
+        let sum = values.iter().sum::<u8>();
+        println!("  sum: {}", sum);
         
         // Demonstrate super_ chain
         println!("  Chain to root: ext1 -> level1 -> root");
         println!("    root_param: {}", params.super_.super_.root_param);
+        
+        Some(sum as u8)
     }
 
     // Nested external module
+    #[command(about = "External module 2 - deeply nested")]
     pub use crate::external2::tasks as ext2;
 }

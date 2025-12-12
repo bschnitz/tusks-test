@@ -1,4 +1,5 @@
-use assert_cmd::Command;
+use assert_cmd::prelude::*;
+use std::process::Command;
 
 pub fn cli() -> Command {
     Command::cargo_bin(env!("CARGO_PKG_NAME")).unwrap()

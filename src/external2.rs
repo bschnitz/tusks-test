@@ -22,7 +22,7 @@ pub mod tasks {
         params: &Parameters,
         #[arg(short, long)]
         x: String
-    ) -> i32 {
+    ) -> u8 {
         println!("=== external2::ext2_task ===");
         println!("  ext2_param: {}", params.ext2_param);
         println!("  x: {}", x);
@@ -58,7 +58,7 @@ pub mod tasks {
         #[arg(long)]
         flag: bool,
         #[arg(long)]
-        numbers: Vec<u64>,
+        numbers: Vec<u8>,
         #[arg(short)]
         optional: Option<String>
     ) -> u8 {

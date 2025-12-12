@@ -1,4 +1,5 @@
 mod common;
+use assert_cmd::prelude::*;
 use predicates::prelude::*;
 
 // =============================================================================
@@ -33,7 +34,7 @@ fn test_root_task2_return_value() {
     common::cli()
         .args(&["--root-param", "test_root", "task2", "--value", "21"])
         .assert()
-        .success()
+        .code(42)
         .stdout(predicate::str::contains("=== root::task2 ==="))
         .stdout(predicate::str::contains("value: 21"))
         .stdout(predicate::str::contains("returning: 42"));
@@ -44,7 +45,7 @@ fn test_root_task2_short_flag() {
     common::cli()
         .args(&["--root-param", "test_root", "task2", "-v", "10"])
         .assert()
-        .success()
+        .code(20)
         .stdout(predicate::str::contains("value: 10"))
         .stdout(predicate::str::contains("returning: 20"));
 }
@@ -97,7 +98,7 @@ fn test_level1_subtask1_with_super_access() {
             "--arg", "optional_value"
         ])
         .assert()
-        .success()
+        .code(1)
         .stdout(predicate::str::contains("=== level1::subtask1 ==="))
         .stdout(predicate::str::contains("level1_field: Some(\"test_field\")"))
         .stdout(predicate::str::contains("arg: Some(\"optional_value\")"))
@@ -115,7 +116,7 @@ fn test_level1_subtask1_default_number() {
             "subtask1"
         ])
         .assert()
-        .success()
+        .code(1)
         .stdout(predicate::str::contains("level1_number: 42")); // default value
 }
 
@@ -129,7 +130,7 @@ fn test_level1_subtask1_custom_number() {
             "subtask1"
         ])
         .assert()
-        .success()
+        .code(1)
         .stdout(predicate::str::contains("level1_number: 100"));
 }
 
@@ -214,7 +215,7 @@ fn test_level3_very_deep() {
             "--depth", "42"
         ])
         .assert()
-        .success()
+        .code(42)
         .stdout(predicate::str::contains("=== level3::very_deep ==="))
         .stdout(predicate::str::contains("depth: 42"))
         .stdout(predicate::str::contains("Nested 42 levels deep!"));
@@ -234,7 +235,7 @@ fn test_level1b_task_no_params() {
             "--x", "255"
         ])
         .assert()
-        .success()
+        .code(255)
         .stdout(predicate::str::contains("=== level1b::task_no_params ==="))
         .stdout(predicate::str::contains("x: 255"))
         .stdout(predicate::str::contains("No Parameters struct in this module"));
@@ -297,7 +298,7 @@ fn test_extroot_ext_task_with_parent_access() {
             "--count", "100"
         ])
         .assert()
-        .success()
+        .code(100)
         .stdout(predicate::str::contains("=== external_root::ext_task ==="))
         .stdout(predicate::str::contains("extroot_name: external_module"))
         .stdout(predicate::str::contains("count: 100"))
@@ -364,7 +365,7 @@ fn test_ext1_vec_task() {
             "--values", "30"
         ])
         .assert()
-        .success()
+        .code(60)
         .stdout(predicate::str::contains("=== external1::ext1_vec_task ==="))
         .stdout(predicate::str::contains("values: [10, 20, 30]"))
         .stdout(predicate::str::contains("sum: 60"))
@@ -417,15 +418,15 @@ fn test_ext2_complex_full_chain() {
             "--flag",
             "--numbers", "100",
             "--numbers", "200",
-            "--numbers", "300",
+            "--numbers", "255",
             "-o", "optional_data"
         ])
         .assert()
-        .success()
+        .code(42)
         .stdout(predicate::str::contains("=== external2::ext2_complex ==="))
         .stdout(predicate::str::contains("ext2_param: complex"))
         .stdout(predicate::str::contains("flag: true"))
-        .stdout(predicate::str::contains("numbers: [100, 200, 300]"))
+        .stdout(predicate::str::contains("numbers: [100, 200, 255]"))
         .stdout(predicate::str::contains("optional: Some(\"optional_data\")"))
         .stdout(predicate::str::contains("Full parameter chain access:"))
         .stdout(predicate::str::contains("ext2_param: complex"))
@@ -444,7 +445,7 @@ fn test_ext2_complex_minimal_args() {
             "ext2-complex"
         ])
         .assert()
-        .success()
+        .code(42)
         .stdout(predicate::str::contains("flag: false"))
         .stdout(predicate::str::contains("numbers: []"))
         .stdout(predicate::str::contains("optional: None"));
@@ -459,7 +460,7 @@ fn test_missing_required_root_param() {
     common::cli()
         .args(&["task1", "--arg1", "hello"])
         .assert()
-        .failure()
+        .code(2) // clap error code
         .stderr(predicate::str::contains("required"));
 }
 
@@ -468,7 +469,8 @@ fn test_invalid_command() {
     common::cli()
         .args(&["--root-param", "root", "nonexistent-command"])
         .assert()
-        .failure();
+        .code(2) // clap error code
+        .stderr(predicate::str::contains("unrecognized subcommand"));
 }
 
 #[test]
@@ -476,7 +478,7 @@ fn test_missing_required_arg_in_task() {
     common::cli()
         .args(&["--root-param", "root", "task1"]) // missing --arg1
         .assert()
-        .failure()
+        .code(2) // clap error code
         .stderr(predicate::str::contains("required"));
 }
 
@@ -485,7 +487,7 @@ fn test_invalid_type_for_numeric_arg() {
     common::cli()
         .args(&["--root-param", "root", "task2", "--value", "not_a_number"])
         .assert()
-        .failure()
+        .code(2) // clap error code
         .stderr(predicate::str::contains("invalid"));
 }
 
