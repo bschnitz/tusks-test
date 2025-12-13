@@ -5,7 +5,8 @@ use tusks::tusks;
     about = "Task management binary",
     long_about = "A binary for managing tasks with git and docker submodules",
     version = "1.0.0",
-    author = "Task Manager"
+    author = "Task Manager",
+    allow_external_subcommands = true,
 )]
 pub mod tasks {
     use clap::{CommandFactory, Parser};
@@ -33,11 +34,37 @@ pub mod tasks {
         }
     }
 
+    #[command(about = "Show help for a task", name="h")]
+    pub fn show_help(#[arg()] task: Option<String>) {
+        let separator = ".";
+        if let Some(task) = task {
+            let parts: Vec<&str> = task.split(separator).collect();
+
+            let args: Vec<&str> = std::iter::once("tasks")
+                .chain(parts.iter().copied())
+                .chain(std::iter::once("--help"))
+                .collect();
+
+            let cli = __internal_tusks_module::cli::Cli::parse_from(args);
+            __internal_tusks_module::handle_matches(&cli);
+        }
+        else {
+            let command = __internal_tusks_module::cli::Cli::command();
+            let task_list = tusks_tasks::task_list::models::TaskList::from_command(
+                &command,
+                ".".to_string(),
+                5,
+                20 
+            );
+            task_list.to_list().print(&tusks_tasks::list::models::RenderConfig::default());
+        }
+    }
+
     /// Main task function
     #[command(about = "Execute main task")]
     #[default]
-    pub fn main_task() {
-        println!("Executing main task in tasks binary");
+    pub fn default_case(external_args: Vec<String>) {
+        println!("Default Case: {:?}", external_args);
     }
 
     /// Git submodule
