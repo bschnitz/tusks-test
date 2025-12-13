@@ -2,7 +2,6 @@ use tusks::tusks;
 
 #[tusks(root)]
 #[command(
-    arg_required_else_help = true,
     about = "Task management binary",
     long_about = "A binary for managing tasks with git and docker submodules",
     version = "1.0.0",
@@ -36,6 +35,7 @@ pub mod tasks {
 
     /// Main task function
     #[command(about = "Execute main task")]
+    #[default]
     pub fn main_task() {
         println!("Executing main task in tasks binary");
     }
