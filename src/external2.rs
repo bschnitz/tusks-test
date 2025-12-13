@@ -36,7 +36,7 @@ pub mod tasks {
         
         // Access root parameters via parent_.super_.super_
         println!("  root_param (via parent_.super_.super_): {}", 
-                 params.super_.super_.super_.root_param);
+                 params.super_.super_.super_.root_param.as_ref().unwrap());
         
         println!("  Parameter chain: ext2 -> ext1 -> level1 -> root");
         println!("    Depth: 4 levels!");
@@ -73,7 +73,7 @@ pub mod tasks {
         println!("    ext2_param: {}", params.ext2_param);
         println!("    ext1_param: {:?}", params.super_.ext1_param);
         println!("    level1_field: {:?}", params.super_.super_.level1_field);
-        println!("    root_param: {}", params.super_.super_.super_.root_param);
+        println!("    root_param: {}", params.super_.super_.super_.root_param.as_ref().unwrap());
         
         42
     }

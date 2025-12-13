@@ -25,7 +25,7 @@ pub mod tasks {
         println!("  count: {}", count);
         
         // Access parent (root) parameters
-        println!("  root_param (via parent_): {}", params.super_.root_param);
+        println!("  root_param (via parent_): {}", params.super_.root_param.as_ref().unwrap());
         println!("  verbose (via parent_): {}", params.super_.verbose);
         
         if *params.super_.verbose {

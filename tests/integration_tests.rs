@@ -456,15 +456,6 @@ fn test_ext2_complex_minimal_args() {
 // =============================================================================
 
 #[test]
-fn test_missing_required_root_param() {
-    common::cli()
-        .args(&["task1", "--arg1", "hello"])
-        .assert()
-        .code(2) // clap error code
-        .stderr(predicate::str::contains("required"));
-}
-
-#[test]
 fn test_invalid_command() {
     common::cli()
         .args(&["--root-param", "root", "nonexistent-command"])

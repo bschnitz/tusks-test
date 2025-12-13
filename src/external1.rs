@@ -24,7 +24,7 @@ pub mod tasks {
         println!("  level1_number (via parent_): {}", params.super_.level1_number);
         
         // Access root parameters via parent_.super_
-        println!("  root_param (via parent_.super_): {}", params.super_.super_.root_param);
+        println!("  root_param (via parent_.super_): {}", params.super_.super_.root_param.as_ref().unwrap());
         println!("  verbose (via parent_.super_): {}", params.super_.super_.verbose);
         
         if *params.super_.super_.verbose {
@@ -47,7 +47,7 @@ pub mod tasks {
         
         // Demonstrate super_ chain
         println!("  Chain to root: ext1 -> level1 -> root");
-        println!("    root_param: {}", params.super_.super_.root_param);
+        println!("    root_param: {}", params.super_.super_.root_param.as_ref().unwrap());
         
         Some(sum as u8)
     }

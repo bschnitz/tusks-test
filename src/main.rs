@@ -1,4 +1,6 @@
+use clap::CommandFactory;
 use tusks::tusks;
+use tusks_tasks::list::models::{List, ListGroup, ListGroupHeader, ListTask, RenderConfig};
 
 mod external_root;
 mod external1;
@@ -13,12 +15,37 @@ mod external2;
     author = "Test Author"
 )]
 pub mod tasks {
+    use clap::{CommandFactory, Parser};
+
     pub struct Parameters<'a> {
         #[arg(long)]
-        pub root_param: &'a String,
+        pub root_param: &'a Option<String>,
         
         #[arg(short, long)]
         pub verbose: &'a bool,
+    }
+
+    #[command(name = "t", allow_external_subcommands = true)]
+    pub fn tasks_mode (
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>
+    ) {
+        let command = __internal_tusks_module::cli::Cli::command();
+        if args.len() == 0 {
+            let task_list = tusks_tasks::task_list::models::TaskList::from_command(
+                &command,
+                ".".to_string(),
+                5,
+                20 
+            );
+            task_list.to_list().print(&tusks_tasks::list::models::RenderConfig::default());
+        }
+        else {
+            let cli = __internal_tusks_module::cli::Cli::parse_from(
+                std::iter::once("tusks").chain(args.iter().map(String::as_str))
+            );
+            __internal_tusks_module::handle_matches(&cli);
+        }
     }
 
     #[skip]
@@ -41,12 +68,12 @@ pub mod tasks {
     )]
     pub fn task1(params: &Parameters, #[arg(long)] arg1: String) -> u8 {
         println!("=== root::task1 ===");
-        println!("  root_param: {}", params.root_param);
+        println!("  root_param: {}", params.root_param.as_ref().unwrap());
         println!("  verbose: {}", params.verbose);
         println!("  arg1: {}", arg1);
         
         if *params.verbose {
-            println!("  [VERBOSE] Executing task1 with root_param='{}'", params.root_param);
+            println!("  [VERBOSE] Executing task1 with root_param='{}'", params.root_param.as_ref().unwrap());
         }
         0
     }
@@ -78,7 +105,7 @@ pub mod tasks {
         items: Vec<String>
     ) {
         println!("=== root::task4 ===");
-        println!("  root_param: {}", params.root_param);
+        println!("  root_param: {}", params.root_param.as_ref().unwrap());
         println!("  items: {:?}", items);
         println!("  item count: {}", items.len());
     }
@@ -109,12 +136,12 @@ pub mod tasks {
             println!("  arg: {:?}", arg);
             
             // Access parent parameters via super_
-            println!("  root_param (via super_): {}", params.super_.root_param);
+            println!("  root_param (via super_): {}", params.super_.root_param.as_ref().unwrap());
             println!("  verbose (via super_): {}", params.super_.verbose);
             
             if *params.super_.verbose {
                 println!("  [VERBOSE] Level1 subtask1 accessing root_param='{}'", 
-                         params.super_.root_param);
+                         params.super_.root_param.as_ref().unwrap());
             }
             1
         }
@@ -128,7 +155,7 @@ pub mod tasks {
             println!("=== level1::subtask2 ===");
             println!("  level1_field: {:?}", params.level1_field);
             println!("  Accessing root via super_:");
-            println!("    root_param: {}", params.super_.root_param);
+            println!("    root_param: {}", params.super_.root_param.as_ref().unwrap());
             println!("    verbose: {}", params.super_.verbose);
         }
 
@@ -158,7 +185,7 @@ pub mod tasks {
                 println!("  level1_number (via super_): {}", params.super_.level1_number);
                 
                 // Access root parameters via super_.super_
-                println!("  root_param (via super_.super_): {}", params.super_.super_.root_param);
+                println!("  root_param (via super_.super_): {}", params.super_.super_.root_param.as_ref().unwrap());
                 println!("  verbose (via super_.super_): {}", params.super_.super_.verbose);
                 
                 if *params.super_.super_.verbose {
@@ -233,6 +260,62 @@ pub mod tasks {
     pub use crate::external_root::tasks as extroot;
 }
 
+//fn main() {
+//    let command = tasks::__internal_tusks_module::cli::Cli::command();
+//    let task_list = tusks_tasks::task_list::models::TaskList::from_command(
+//        &command,
+//        ".".to_string(),
+//        5,
+//        20 
+//    );
+//    task_list.to_list().print(&RenderConfig::default());
+//}
+
 fn main() -> std::process::ExitCode {
     std::process::ExitCode::from(tasks::exec_cli().unwrap_or(0) as u8)
 }
+
+//fn main() {
+//    let list = List {
+//        description: Some("list description".to_string()),
+//        groups: vec![
+//            ListGroup {
+//                header: ListGroupHeader {
+//                    name: "group header 1".to_string(),
+//                },
+//                tasks: vec![
+//                    ListTask {
+//                        name: "item 1".to_string(),
+//                        description: Some("item description".to_string()),
+//                    },
+//                    ListTask {
+//                        name: "item 2".to_string(),
+//                        description: Some("other item description".to_string()),
+//                    },
+//                    ListTask {
+//                        name: "item 3".to_string(),
+//                        description: None,
+//                    },
+//                ],
+//            },
+//            ListGroup {
+//                header: ListGroupHeader {
+//                    name: "group header 2".to_string(),
+//                },
+//                tasks: vec![
+//                    ListTask {
+//                        name: "item 1.2".to_string(),
+//                        description: Some("another description".to_string()),
+//                    },
+//                    ListTask {
+//                        name: "🚀 unicode".to_string(),
+//                        description: Some("unicode test with emoji".to_string()),
+//                    },
+//                ],
+//            },
+//        ],
+//    };
+//    
+//    let config = RenderConfig::default();
+//    list.print(&config);
+//}

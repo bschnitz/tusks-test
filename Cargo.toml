@@ -2,10 +2,12 @@
 name = "tusks-test"
 version = "1.2.2"
 edition = "2024"
+default-run = "tusks-test"
 
 [dependencies]
 clap = { version = "4.5.50", features = ["string", "derive"] }
 tusks = { path = "../tusks" }
+tusks-tasks = { path = "../tusks-tasks" }
 
 [dev-dependencies]
 assert_cmd = "2.1.1"
