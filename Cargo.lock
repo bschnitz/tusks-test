@@ -357,6 +357,7 @@ dependencies = [
  "indexmap",
  "tusks-lib",
  "tusks-macro",
+ "tusks-tasks",
 ]
 
 [[package]]

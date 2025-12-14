@@ -1,70 +1,21 @@
 use tusks::tusks;
 
-#[tusks(root)]
+#[tusks(root, tasks(max_groupsize=5, max_depth=20, separator="."))]
 #[command(
     about = "Task management binary",
     long_about = "A binary for managing tasks with git and docker submodules",
     version = "1.0.0",
     author = "Task Manager",
-    allow_external_subcommands = true,
 )]
 pub mod tasks {
     use clap::{CommandFactory, Parser};
 
-    #[command(name = "t", allow_external_subcommands = true)]
-    pub fn tasks_mode (
-        #[arg(trailing_var_arg = true)]
-        args: Vec<String>
-    ) {
-        let command = __internal_tusks_module::cli::Cli::command();
-        if args.len() == 0 {
-            let task_list = tusks_tasks::task_list::models::TaskList::from_command(
-                &command,
-                ".".to_string(),
-                5,
-                20 
-            );
-            task_list.to_list().print(&tusks_tasks::list::models::RenderConfig::default());
-        }
-        else {
-            let cli = __internal_tusks_module::cli::Cli::parse_from(
-                std::iter::once("tasks").chain(args.iter().map(String::as_str))
-            );
-            __internal_tusks_module::handle_matches(&cli);
-        }
-    }
-
-    #[command(about = "Show help for a task", name="h")]
-    pub fn show_help(#[arg()] task: Option<String>) {
-        let separator = ".";
-        if let Some(task) = task {
-            let parts: Vec<&str> = task.split(separator).collect();
-
-            let args: Vec<&str> = std::iter::once("tasks")
-                .chain(parts.iter().copied())
-                .chain(std::iter::once("--help"))
-                .collect();
-
-            let cli = __internal_tusks_module::cli::Cli::parse_from(args);
-            __internal_tusks_module::handle_matches(&cli);
-        }
-        else {
-            let command = __internal_tusks_module::cli::Cli::command();
-            let task_list = tusks_tasks::task_list::models::TaskList::from_command(
-                &command,
-                ".".to_string(),
-                5,
-                20 
-            );
-            task_list.to_list().print(&tusks_tasks::list::models::RenderConfig::default());
-        }
-    }
-
-    /// Main task function
-    #[command(about = "Execute main task")]
-    #[default]
-    pub fn default_case(external_args: Vec<String>) {
-        println!("Default Case: {:?}", external_args);
+    pub struct Parameters<'a> {
+        #[arg(long)]
+        pub root_param: &'a Option<String>,
+        
+        #[arg(short, long)]
+        pub verbose: &'a bool,
     }
 
     /// Git submodule
