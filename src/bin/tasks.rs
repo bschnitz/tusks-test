@@ -1,6 +1,6 @@
 use tusks::tusks;
 
-#[tusks(root, tasks(max_groupsize=5, max_depth=20, separator="."))]
+#[tusks(root, tasks(max_groupsize=5, max_depth=20, separator=".", use_colors=false))]
 #[command(
     about = "Task management binary",
     long_about = "A binary for managing tasks with git and docker submodules",
@@ -8,8 +8,6 @@ use tusks::tusks;
     author = "Task Manager",
 )]
 pub mod tasks {
-    use clap::{CommandFactory, Parser};
-
     pub struct Parameters<'a> {
         #[arg(long)]
         pub root_param: &'a Option<String>,

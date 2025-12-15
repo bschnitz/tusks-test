@@ -1,7 +1,4 @@
-use clap::CommandFactory;
 use tusks::tusks;
-use tusks_tasks::list::models::{List, ListGroup, ListGroupHeader, ListTask, RenderConfig};
-
 mod external_root;
 mod external1;
 mod external2;
@@ -15,8 +12,6 @@ mod external2;
     author = "Test Author"
 )]
 pub mod tasks {
-    use clap::{CommandFactory, Parser};
-
     pub struct Parameters<'a> {
         #[arg(long)]
         pub root_param: &'a Option<String>,
@@ -260,62 +255,6 @@ pub mod tasks {
     pub use crate::external_root::tasks as extroot;
 }
 
-//fn main() {
-//    let command = tasks::__internal_tusks_module::cli::Cli::command();
-//    let task_list = tusks_tasks::task_list::models::TaskList::from_command(
-//        &command,
-//        ".".to_string(),
-//        5,
-//        20 
-//    );
-//    task_list.to_list().print(&RenderConfig::default());
-//}
-
 fn main() -> std::process::ExitCode {
     std::process::ExitCode::from(tasks::exec_cli().unwrap_or(0) as u8)
 }
-
-//fn main() {
-//    let list = List {
-//        description: Some("list description".to_string()),
-//        groups: vec![
-//            ListGroup {
-//                header: ListGroupHeader {
-//                    name: "group header 1".to_string(),
-//                },
-//                tasks: vec![
-//                    ListTask {
-//                        name: "item 1".to_string(),
-//                        description: Some("item description".to_string()),
-//                    },
-//                    ListTask {
-//                        name: "item 2".to_string(),
-//                        description: Some("other item description".to_string()),
-//                    },
-//                    ListTask {
-//                        name: "item 3".to_string(),
-//                        description: None,
-//                    },
-//                ],
-//            },
-//            ListGroup {
-//                header: ListGroupHeader {
-//                    name: "group header 2".to_string(),
-//                },
-//                tasks: vec![
-//                    ListTask {
-//                        name: "item 1.2".to_string(),
-//                        description: Some("another description".to_string()),
-//                    },
-//                    ListTask {
-//                        name: "🚀 unicode".to_string(),
-//                        description: Some("unicode test with emoji".to_string()),
-//                    },
-//                ],
-//            },
-//        ],
-//    };
-//    
-//    let config = RenderConfig::default();
-//    list.print(&config);
-//}
